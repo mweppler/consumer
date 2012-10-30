@@ -12,12 +12,15 @@ class Consumer
   def response
     case @request.path
     when "/consume"
-      Rack::Response.new do |response|
-        File.open(File.dirname(__FILE__) + '/../data/data.json', 'a') do |f|
-          f.write "# Request came in at: #{Time.now}\n#{@request.params}\n---\n"
-        end
-        response.redirect("http://mattweppler.info")
+      if @request.env["CONTENT_TYPE"].eql? 'application/json'
+        request_params = @request.env["rack.input"].gets
+      else
+        request_params = @request.params
       end
+      File.open(File.dirname(__FILE__) + '/../data/data.json', 'a') do |f|
+        f.write "# Request came in at: #{Time.now}\n#{request_params}\n---\n"
+      end
+      Rack::Response.new("Ok", 200)
     else Rack::Response.new("Not Found", 404)
     end
   end
