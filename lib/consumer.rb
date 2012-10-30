@@ -17,8 +17,11 @@ class Consumer
       else
         request_params = @request.params
       end
+      request_method = @request.env["REQUEST_METHOD"]
+      remote_addr = @request.env["REMOTE_ADDR"]
+      remote_host = @request.env["REMOTE_HOST"]
       File.open(File.dirname(__FILE__) + '/../data/data.json', 'a') do |f|
-        f.write "# Request came in at: #{Time.now}\n#{request_params}\n---\n"
+        f.write "##{request_method} request (from: #{remote_addr}) came in at: #{Time.now}\n#{request_params}\n---\n"
       end
       Rack::Response.new("Ok", 200)
     else Rack::Response.new("Not Found", 404)
