@@ -1,4 +1,5 @@
 require "erb"
+require "json"
 
 class Consumer
   def self.call(env)
@@ -23,7 +24,7 @@ class Consumer
       File.open(File.dirname(__FILE__) + '/../data/data.json', 'a') do |f|
         f.write "##{request_method} request (from: #{remote_addr}) came in at: #{Time.now}\n#{request_params}\n---\n"
       end
-      Rack::Response.new("Ok", 200)
+      Rack::Response.new({ :message => "", :status => "ok", :values => { } }.to_json, 200, { 'Content-Type' => 'application/json' })
     else Rack::Response.new("Not Found", 404)
     end
   end
